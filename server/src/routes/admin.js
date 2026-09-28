@@ -8,7 +8,7 @@ import fs from 'fs';
 const r=Router();
 r.use(auth,admin);
 
-const uploadDir=path.resolve(process.cwd(),'uploads/products');
+const uploadDir='/tmp/uploads/products';
 fs.mkdirSync(uploadDir,{recursive:true});
 const storage=multer.diskStorage({
   destination:(req,file,cb)=>cb(null,uploadDir),
