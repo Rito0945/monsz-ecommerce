@@ -1,0 +1,21 @@
+{
+  "name": "monsz-server",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "seed": "node src/seed.js"
+  },
+  "dependencies": {
+    "cors": "latest",
+    "dotenv": "latest",
+    "express": "latest",
+    "mongoose": "latest",
+    "morgan": "latest",
+    "bcryptjs": "latest",
+    "jsonwebtoken": "latest",
+    "helmet": "latest",
+    "express-rate-limit": "latest",
+    "multer": "latest"
+  }
+}
