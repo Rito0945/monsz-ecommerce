@@ -15,6 +15,13 @@ import { Product } from './models/models.js';
 dotenv.config();
 
 const app = express();
+app.get('/', (req, res) => {
+  res.json({
+    ok: true,
+    brand: 'MONSZ',
+    message: 'MONSZ API is running'
+  });
+});
 
 app.use(helmet());
 
