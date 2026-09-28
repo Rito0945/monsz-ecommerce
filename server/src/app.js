@@ -52,16 +52,19 @@ app.use(
 app.use('/api/orders', orderRoutes);
 app.use('/api/admin', adminRoutes);
 
-app.get('/api/health', (req, res) =>
+const healthCheck = (req, res) => {
   res.json({
     ok: mongoose.connection.readyState === 1,
     brand: 'MONSZ',
-    database:
-      mongoose.connection.readyState === 1
-        ? 'connected'
-        : 'disconnected',
-  })
-);
+    database: mongoose.connection.readyState === 1
+      ? 'connected'
+      : 'disconnected'
+  });
+};
+
+app.get('/health', healthCheck);
+app.get('/api/health', healthCheck);
+
 
 app.get('/api/products', async (req, res) => {
   try {
