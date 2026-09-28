@@ -29,8 +29,9 @@ app.use(morgan('dev'));
 
 app.use(
   '/uploads',
-  express.static(path.resolve(process.cwd(), 'uploads'))
+  express.static('/tmp/uploads')
 );
+
 
 app.use(
   '/api/auth',
