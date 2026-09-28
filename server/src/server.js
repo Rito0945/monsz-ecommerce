@@ -6,27 +6,20 @@ dotenv.config();
 
 const port = process.env.PORT || 5000;
 
-mongoose
-  .connect(
-    process.env.MONGO_URI ||
-      'mongodb://127.0.0.1:27017/monsz'
-  )
-  .then(() => {
-    console.log('MongoDB connected');
-
-    app.listen(port, () => {
-      console.log(`MONSZ API running on ${port}`);
-    });
-  })
-  .catch((e) => {
-    console.error(
-      'MongoDB connection failed:',
-      e.message
+const startServer = async () => {
+  try {
+    await mongoose.connect(
+      process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/monsz'
     );
 
-    app.listen(port, () => {
-      console.log(
-        `MONSZ API running on ${port} — database unavailable`
-      );
-    });
+    console.log('MongoDB connected');
+  } catch (e) {
+    console.error('MongoDB connection failed:', e.message);
+  }
+
+  app.listen(port, () => {
+    console.log(`MONSZ API running on ${port}`);
   });
+};
+
+startServer();
