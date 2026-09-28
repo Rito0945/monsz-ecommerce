@@ -1,7 +1,32 @@
-import express from 'express';import cors from 'cors';import mongoose from 'mongoose';import dotenv from 'dotenv';import morgan from 'morgan';import helmet from 'helmet';import rateLimit from 'express-rate-limit';import path from 'path';import authRoutes from './routes/auth.js';import orderRoutes from './routes/orders.js';import adminRoutes from './routes/admin.js';import {Product} from './models/models.js';
-dotenv.config();const app=express();
-app.use(helmet());app.use(cors({origin:process.env.CLIENT_URL||'http://localhost:5173'}));app.use(express.json({limit:'1mb'}));app.use(morgan('dev'));app.use('/uploads',express.static(path.resolve(process.cwd(),'uploads')));app.use('/api/auth',rateLimit({windowMs:15*60*1000,max:100}),authRoutes);app.use('/api/orders',orderRoutes);app.use('/api/admin',adminRoutes);
-app.get('/api/health',(req,res)=>res.json({ok:mongoose.connection.readyState===1,brand:'MONSZ',database:mongoose.connection.readyState===1?'connected':'disconnected'}));
-app.get('/api/products',async(req,res)=>{try{const q={published:true};if(req.query.category)q.category=req.query.category;if(req.query.collection)q.collection=req.query.collection;if(req.query.search)q.$or=[{name:new RegExp(req.query.search,'i')},{tags:new RegExp(req.query.search,'i')}];if(req.query.newArrival==='true')q.newArrival=true;const sort=req.query.sort==='price-asc'?{price:1}:req.query.sort==='price-desc'?{price:-1}:{createdAt:-1};const products=await Product.find(q).sort(sort).limit(Math.min(Number(req.query.limit)||100,100));res.json(products)}catch(e){res.status(500).json({message:e.message})}});
-app.get('/api/products/:slug',async(req,res)=>{const p=await Product.findOne({slug:req.params.slug,published:true});if(!p)return res.status(404).json({message:'Product not found'});res.json(p)});
-const port=process.env.PORT||5000;mongoose.connect(process.env.MONGO_URI||'mongodb://127.0.0.1:27017/monsz').then(()=>{console.log('MongoDB connected');app.listen(port,()=>console.log(`MONSZ API running on ${port}`))}).catch(e=>{console.error('MongoDB connection failed:',e.message);app.listen(port,()=>console.log(`MONSZ API running on ${port} — database unavailable`))});
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import app from './app.js';
+
+dotenv.config();
+
+const port = process.env.PORT || 5000;
+
+mongoose
+  .connect(
+    process.env.MONGO_URI ||
+      'mongodb://127.0.0.1:27017/monsz'
+  )
+  .then(() => {
+    console.log('MongoDB connected');
+
+    app.listen(port, () => {
+      console.log(`MONSZ API running on ${port}`);
+    });
+  })
+  .catch((e) => {
+    console.error(
+      'MongoDB connection failed:',
+      e.message
+    );
+
+    app.listen(port, () => {
+      console.log(
+        `MONSZ API running on ${port} — database unavailable`
+      );
+    });
+  });
